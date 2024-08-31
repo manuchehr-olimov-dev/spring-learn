@@ -1,35 +1,49 @@
 package com.example.shop.controllers;
 
+import com.example.shop.controllers.requests.CreateUserRequest;
+import com.example.shop.controllers.responses.user.UserResponse;
 import com.example.shop.entities.UserEntity;
+import com.example.shop.exceptions.user.UserNotFoundByIdException;
+import com.example.shop.repositories.UserRepository;
 import com.example.shop.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
-@RequestMapping("user/")
+@RequiredArgsConstructor
+@RequestMapping("user")
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
+    private final UserRepository userRep;
 
     @PostMapping("create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserEntity> create(@Valid @RequestBody UserEntity user)
+    public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest user)
     {
         return userService.create(user);
     }
 
-
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Optional<UserEntity>> read(@PathVariable("id") Long id)
+    public ResponseEntity<UserResponse> read(@PathVariable("id") Long id)
     {
-        return ResponseEntity.ok(userService.findById(id).getBody());
+        return userService.read(id);
     }
+
+    @GetMapping("ex")
+    public String P(){
+
+        UserEntity userEntity = userRep.findById(10L)
+                .orElseThrow(
+                () -> new UserNotFoundByIdException(10L)
+        );
+
+        return "123";
+        //        return ResponseEntity.status(HttpStatus.OK).body("Nice");
+    }
+
 
     @PutMapping("edit/{id}")
     @ResponseStatus(HttpStatus.OK)

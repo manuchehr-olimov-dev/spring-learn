@@ -18,7 +18,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Entity
 @Table(name = "orders")
-public class OrderEntity {
+public class OrderEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = "id")
